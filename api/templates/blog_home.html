@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog</title>
+  <link rel="stylesheet" href="/static/css/blog.css">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+  <h1>Blog</h1>
+  <nav>
+    <form style="margin:0;">
+      <input type="search" placeholder="Search..." style="padding:0.4rem 1rem; border-radius:6px; border:1px solid #eee;">
+    </form>
+    <a href="{{ url_for('admin.admin_home') }}">Admin</a>
+    <span style="font-size:1.2rem;">🌙</span>
+  </nav>
+</header>
+<div class="container">
+  <div class="latest-posts">Latest Posts</div>
+  <div class="posts-grid">
+    {% for post in posts %}
+      {% set meta = namespace(title='', date='', tags=[], image='', excerpt='') %}
+      {% set lines = [] %}
+      {% with open('posts/' + post) as f %}
+        {% set lines = f.readlines() %}
+      {% endwith %}
+      {% for line in lines %}
+        {% if line.startswith('title:') %}{% set meta.title = line[6:].strip() %}{% endif %}
+        {% if line.startswith('date:') %}{% set meta.date = line[5:].strip() %}{% endif %}
+        {% if line.startswith('tags:') %}{% set meta.tags = line[5:].replace('[','').replace(']','').replace('"','').replace("'",'').split(',') %}{% endif %}
+        {% if line.startswith('image:') %}{% set meta.image = line[6:].strip() %}{% endif %}
+        {% if line.startswith('excerpt:') %}{% set meta.excerpt = line[8:].strip() %}{% endif %}
+      {% endfor %}
+      <div class="post-card">
+        {% if meta.image %}
+        <img src="{{ meta.image }}" class="post-image" alt="{{ meta.title }}">
+        {% else %}
+        <div class="post-image"></div>
+        {% endif %}
+        <div class="post-content">
+          <div class="post-date">{{ meta.date }}</div>
+          <a href="{{ url_for('view_post', post=post) }}" style="text-decoration:none;color:inherit;">
+            <div class="post-title">{{ meta.title or post }}</div>
+          </a>
+          <div class="post-excerpt">{{ meta.excerpt }}</div>
+          <div class="tags">
+            {% for tag in meta.tags if tag.strip() %}
+              <span class="tag">{{ tag.strip() }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+</body>
+</html>
