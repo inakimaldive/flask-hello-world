@@ -1,9 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head><title>{{ post }}</title></head>
+<head>
+  <title>{{ meta.title }}</title>
+  <link rel="stylesheet" href="/static/css/blog.css">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
+</head>
 <body>
-<h1>{{ post }}</h1>
-<div>{{ content|safe }}</div>
-<a href="/">Back to Home</a>
+<header>
+  <h1>Blog</h1>
+  <nav>
+    <a href="/">Home</a>
+    <a href="{{ url_for('admin.admin_home') }}">Admin</a>
+  </nav>
+</header>
+<div class="container" style="max-width: 800px;">
+  <div class="post-card" style="box-shadow:none; border:none;">
+    {% if meta.image %}
+      <img src="{{ meta.image }}" class="post-image" alt="{{ meta.title }}" style="height:300px;">
+    {% endif %}
+    <div class="post-content">
+      <div class="post-date">{{ meta.date }}</div>
+      <div class="post-title" style="font-size:2rem;">{{ meta.title }}</div>
+      <div class="tags" style="margin-bottom:1.5rem;">
+        {% for tag in meta.tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      <div class="post-excerpt" style="font-size:1.1rem; color:#666; margin-bottom:2rem;">{{ meta.excerpt }}</div>
+      <div class="post-body" style="font-size:1.15rem; line-height:1.7; color:#222;">
+        {{ content|safe }}
+      </div>
+    </div>
+  </div>
+  <a href="/" style="display:inline-block;margin-top:2rem;color:#555;text-decoration:underline;">← Back to Home</a>
+</div>
 </body>
 </html>
